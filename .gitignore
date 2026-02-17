@@ -1,0 +1,12 @@
+# Archivos temporales de Go
+bin/
+*.exe
+*.log
+
+# Configuración de GoLand
+.idea/
+*.iml
+
+# Archivos temporales del sistema
+*.tmp
+*.swp
