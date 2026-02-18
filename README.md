@@ -25,9 +25,9 @@ Simple REST API in Go (Gin) for vulnerability summaries based on NIST NVD data, 
 - `models/`: domain/request/response models
 
 ## Security Notes
-- NVD key is loaded from Docker secret file via `NVD_API_KEY_FILE`.
-- Fallback env var `NVD_API_KEY` is still supported.
-- Local secrets are ignored by git (`secrets/`, `.env`).
+- In GCP, secrets are managed with Secret Manager (`db-password`, `nvd-api-key`, `iap-client-secret`, `database-url`).
+- Terraform reads sensitive values from Secret Manager and avoids plaintext secrets in `terraform.tfvars`.
+- Local `.env` files are ignored by git.
 
 ## Requirements
 - Docker Desktop (or Docker Engine + Compose)
@@ -39,19 +39,11 @@ Use `.env` (based on `.env.example`):
 POSTGRES_DB=security_api
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=__SET_SECURE_VALUE__
-NVD_API_KEY_SECRET_FILE=./secrets/nvd_api_key.txt
+NVD_API_KEY=__SET_OPTIONAL_FOR_LOCAL_DOCKER__
 HTTP_TIMEOUT_SECONDS=20
 NVD_RESULTS_PER_PAGE=500
 NVD_MAX_PAGES=3
 ```
-
-Create secret file (not committed):
-
-```txt
-secrets/nvd_api_key.txt
-```
-
-Put only your NVD API key in that file.
 
 ## Run
 ```bash
@@ -98,7 +90,11 @@ curl -X POST http://localhost:8080/assets/server-01/vulnerabilities \
 ```
 
 ## Rotation of NVD Key
-1. Update `secrets/nvd_api_key.txt`.
+1. Add a new Secret Manager version for `nvd-api-key`.
+2. Re-run Terraform apply (or redeploy Cloud Run) to pick up latest secret version.
+
+Local Docker only:
+1. Update `NVD_API_KEY` in your local `.env`.
 2. Recreate API container:
 ```bash
 docker compose up -d --force-recreate api
