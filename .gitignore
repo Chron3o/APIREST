@@ -10,3 +10,8 @@ bin/
 # Archivos temporales del sistema
 *.tmp
 *.swp
+
+# Secretos locales
+secrets/
+.env
+!secrets/.gitkeep

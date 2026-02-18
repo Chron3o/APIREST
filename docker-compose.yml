@@ -29,12 +29,18 @@ services:
     environment:
       PORT: 8080
       DATABASE_URL: postgres://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-security_api}?sslmode=disable
-      NVD_API_KEY: ${NVD_API_KEY:-}
+      NVD_API_KEY_FILE: /run/secrets/nvd_api_key
       HTTP_TIMEOUT_SECONDS: ${HTTP_TIMEOUT_SECONDS:-20}
       NVD_RESULTS_PER_PAGE: ${NVD_RESULTS_PER_PAGE:-500}
       NVD_MAX_PAGES: ${NVD_MAX_PAGES:-3}
+    secrets:
+      - nvd_api_key
     ports:
       - "8080:8080"
 
 volumes:
   postgres_data:
+
+secrets:
+  nvd_api_key:
+    file: ${NVD_API_KEY_SECRET_FILE:-./secrets/nvd_api_key.txt}
