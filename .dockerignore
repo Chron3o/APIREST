@@ -1,0 +1,7 @@
+.git
+.idea
+bin
+tmp
+*.log
+*.out
+docker-compose.yml

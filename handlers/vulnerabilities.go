@@ -1,50 +1,68 @@
 package handlers
 
 import (
+	"APIREST/models"
+	"APIREST/services"
 	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
-// Pseudocódigo para simplificar
+type VulnerabilityHandler struct {
+	service *services.VulnerabilityService
+}
 
-func GetSummary(c *gin.Context) {
-	// Aquí llamarías al servicio que consume la API NVD en tiempo real
-	summary := map[string]int{
-		"critical": 10,
-		"high":     20,
-		"medium":   30,
-		"low":      5,
-		"info":     0,
+func NewVulnerabilityHandler(service *services.VulnerabilityService) *VulnerabilityHandler {
+	return &VulnerabilityHandler{service: service}
+}
+
+func (h *VulnerabilityHandler) GetSummary(c *gin.Context) {
+	summary, err := h.service.GetSummary(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 	c.JSON(http.StatusOK, summary)
 }
 
-func PostRemediations(c *gin.Context) {
+func (h *VulnerabilityHandler) PostRemediations(c *gin.Context) {
 	assetID := c.Param("asset_id")
-	var body struct {
-		CVEs []string `json:"cves"`
-	}
+	var body models.RemediationRequest
+
 	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// Aquí validarías cada CVE contra NVD y guardarías en DB
-	// Por ahora simulamos éxito
+	remediatedCVEs, err := h.service.RegisterRemediations(c.Request.Context(), assetID, body.CVEs)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"asset_id":        assetID,
-		"remediated_cves": body.CVEs,
+		"remediated_cves": remediatedCVEs,
 	})
 }
 
-func GetUncorrectedSummary(c *gin.Context) {
-	// Consultar base de datos y calcular resumen sin corregidas
-	summary := map[string]int{
-		"critical": 5,
-		"high":     10,
-		"medium":   15,
-		"low":      3,
-		"info":     0,
+func (h *VulnerabilityHandler) GetUncorrectedSummary(c *gin.Context) {
+	summary, err := h.service.GetUncorrectedSummary(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
 	}
 	c.JSON(http.StatusOK, summary)
+}
+
+func (h *VulnerabilityHandler) SyncVulnerabilities(c *gin.Context) {
+	total, err := h.service.SyncVulnerabilities(c.Request.Context())
+	if err != nil {
+		c.JSON(http.StatusBadGateway, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"synced_vulnerabilities": total,
+	})
 }
