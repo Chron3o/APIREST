@@ -107,3 +107,22 @@ docker compose up -d --force-recreate api
 ## Notes for the Challenge
 - No DB preloading at startup: only schema migration runs on boot.
 - Data sync is explicit (`/vulnerabilities/sync`) or lazy on first summary call.
+
+## GCP Deployment
+Production deployment assets are in `infra/gcp/`.
+
+Architecture target:
+- Cloud Load Balancer (HTTPS) + Cloud Armor (WAF)
+- Cloud Run (API)
+- Cloud SQL (PostgreSQL)
+- Secret Manager
+- Cloud Scheduler (sync trigger)
+- Optional Pub/Sub for async workflows
+
+Start with:
+1. `cp infra/gcp/variables.env.example infra/gcp/variables.env`
+2. Edit `infra/gcp/variables.env`
+3. `bash infra/gcp/bootstrap.sh`
+4. `bash infra/gcp/deploy.sh`
+5. `bash infra/gcp/scheduler.sh`
+6. Optional: `bash infra/gcp/lb_waf.sh`
