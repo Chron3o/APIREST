@@ -107,3 +107,20 @@ docker compose up -d --force-recreate api
 ## Notes for the Challenge
 - No DB preloading at startup: only schema migration runs on boot.
 - Data sync is explicit (`/vulnerabilities/sync`) or lazy on first summary call.
+
+## GCP Terraform Deployment
+Terraform infrastructure for this architecture is available at `infra/terraform`:
+
+- IAP (SSO + MFA) in front of HTTPS Load Balancer
+- Cloud Run (Dockerized Gin API)
+- Cloud SQL (PostgreSQL)
+- Secret Manager
+- Pub/Sub + Cloud Scheduler
+- Cloud Armor (WAF)
+
+Quick start:
+1. `cp infra/terraform/terraform.tfvars.example infra/terraform/terraform.tfvars`
+2. Create required Secret Manager secrets (`db-password`, `nvd-api-key`, `iap-client-secret`)
+3. Edit non-secret values in `infra/terraform/terraform.tfvars`
+4. `cd infra/terraform`
+5. `terraform init && terraform apply`

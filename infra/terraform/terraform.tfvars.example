@@ -1,0 +1,27 @@
+project_id = "your-project-id"
+region     = "us-central1"
+
+service_name    = "security-api"
+container_image = "us-central1-docker.pkg.dev/your-project-id/apirest/apirest:latest"
+
+db_instance_name = "security-api-pg"
+db_name          = "security_api"
+db_user          = "api_user"
+
+db_password_secret_id       = "db-password"
+nvd_api_key_secret_id       = "nvd-api-key"
+database_url_secret_id      = "database-url"
+iap_client_secret_secret_id = "iap-client-secret"
+
+domain_name          = "api.example.com"
+operator_group_email = "security-operators@example.com"
+
+# Create OAuth credentials in Google Cloud Console for IAP and set the client ID below.
+iap_client_id = "replace-with-iap-client-id"
+
+scheduler_cron     = "*/30 * * * *"
+scheduler_timezone = "UTC"
+
+http_timeout_seconds = 20
+nvd_results_per_page = 500
+nvd_max_pages        = 3

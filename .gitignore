@@ -15,3 +15,10 @@ bin/
 secrets/
 .env
 !secrets/.gitkeep
+
+# Terraform local files
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfplan
