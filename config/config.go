@@ -22,7 +22,7 @@ type Config struct {
 func Load() Config {
 	return Config{
 		Port:              getEnv("PORT", "8080"),
-		DatabaseURL:       getEnv("DATABASE_URL", "postgres://postgres:postgres@localhost:5432/security_api?sslmode=disable"),
+		DatabaseURL:       getEnv("DATABASE_URL", ""),
 		NVDAPIKey:         loadNVDAPIKey(),
 		HTTPTimeout:       getEnvDurationSeconds("HTTP_TIMEOUT_SECONDS", 20),
 		NVDResultsPerPage: getEnvInt("NVD_RESULTS_PER_PAGE", 500),
